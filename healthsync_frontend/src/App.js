@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import './App.css';
 
+// Import stub feature components
+import ActivityTracking from './components/ActivityTracking';
+import DietTracking from './components/DietTracking';
+import ProgressInsights from './components/ProgressInsights';
+import HabitReminders from './components/HabitReminders';
+
 /**
  * PUBLIC_INTERFACE
  * Main App component serving as HealthSync's dashboard container.
@@ -13,60 +19,39 @@ import './App.css';
  * - Habit Reminders
  */
 function App() {
-  // Track selected feature (stub states for now)
+  // Track selected feature
   const [selected, setSelected] = useState('activity');
 
-  // Feature metadata
+  // Feature metadata for navigation
   const FEATURES = [
     {
       key: 'activity',
       name: 'Activity Tracking',
-      icon: '🏃‍♂️'
+      icon: '🏃‍♂️',
+      component: ActivityTracking,
     },
     {
       key: 'diet',
       name: 'Diet Tracking',
-      icon: '🍎'
+      icon: '🍎',
+      component: DietTracking,
     },
     {
       key: 'progress',
       name: 'Progress Insights',
-      icon: '📈'
+      icon: '📈',
+      component: ProgressInsights,
     },
     {
       key: 'reminders',
       name: 'Habit Reminders',
-      icon: '⏰'
+      icon: '⏰',
+      component: HabitReminders,
     }
   ];
 
-  // Main stub content for each feature
-  const featureContent = {
-    activity: (
-      <div>
-        <h2 className="dashboard-section-title">Activity Tracking</h2>
-        <p className="description">Monitor and log daily physical activities such as steps, workouts, and exercise routines.</p>
-      </div>
-    ),
-    diet: (
-      <div>
-        <h2 className="dashboard-section-title">Diet Tracking</h2>
-        <p className="description">Track daily calorie intake, log meals, and monitor nutritional goals.</p>
-      </div>
-    ),
-    progress: (
-      <div>
-        <h2 className="dashboard-section-title">Progress Insights</h2>
-        <p className="description">Visualize health trends and progress with charts and analytics.</p>
-      </div>
-    ),
-    reminders: (
-      <div>
-        <h2 className="dashboard-section-title">Habit Reminders</h2>
-        <p className="description">Set reminders for workouts, meals, and hydration to build healthy habits.</p>
-      </div>
-    ),
-  };
+  // Find current selected feature's component
+  const SelectedComponent = FEATURES.find(f => f.key === selected)?.component || (() => <div />);
 
   return (
     <div className="app healthsync-dashboard">
@@ -87,10 +72,18 @@ function App() {
       </nav>
 
       {/* Dashboard layout: sidebar/tabs + main content */}
-      <div className="dashboard-layout">
+      <div className="dashboard-layout" style={{ display: 'flex', marginTop: 76, minHeight: 'calc(100vh - 76px)' }}>
         {/* Sidebar/Tabs for feature navigation */}
-        <aside className="dashboard-sidebar">
-          <nav className="dashboard-nav">
+        <aside className="dashboard-sidebar"
+          style={{
+            width: 200,
+            background: 'var(--color-accent)',
+            borderRight: '1px solid var(--border-color)',
+            paddingTop: 32,
+            minHeight: '100%',
+            boxSizing: 'border-box'
+          }}>
+          <nav className="dashboard-nav" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {FEATURES.map((f) => (
               <button
                 key={f.key}
@@ -98,23 +91,38 @@ function App() {
                 onClick={() => setSelected(f.key)}
                 aria-label={f.name}
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
                   background: selected === f.key ? 'var(--color-primary)' : 'transparent',
-                  color: selected === f.key ? 'var(--kavia-dark)' : 'var(--text-color)'
+                  color: selected === f.key ? 'var(--kavia-dark)' : 'var(--kavia-dark)',
+                  padding: '14px 18px',
+                  border: 'none',
+                  borderRadius: 6,
+                  fontWeight: selected === f.key ? 700 : 500,
+                  fontSize: '1.07rem',
+                  cursor: 'pointer',
+                  transition: 'background 0.18s'
                 }}
               >
-                <span className="dashboard-icon" aria-hidden="true">{f.icon}</span>
+                <span className="dashboard-icon" aria-hidden="true" style={{ fontSize: 21 }}>{f.icon}</span>
                 <span>{f.name}</span>
               </button>
             ))}
           </nav>
         </aside>
-        
+
         {/* Main content area */}
-        <main className="dashboard-main">
+        <main className="dashboard-main" style={{
+          flex: 1,
+          background: 'var(--kavia-dark)',
+          minHeight: '100%',
+          paddingLeft: 0,
+        }}>
           <div className="container" style={{ maxWidth: 900, margin: '0 auto' }}>
-            {/* Title and stub content */}
-            <div style={{ marginTop: 40, minHeight: 240 }}>{featureContent[selected]}</div>
-            {/* Placeholder: as features are implemented, replace stub */}
+            <div style={{ marginTop: 40, minHeight: 240 }}>
+              <SelectedComponent />
+            </div>
           </div>
         </main>
       </div>
